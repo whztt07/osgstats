@@ -80,7 +80,43 @@ void StatsVisitor::print(std::ostream &out)
 {
     osgUtil::StatsVisitor::print(out);
 
-    out << std::setw(12) << "Triangles  " << std::setw(10) << _numTriangles << std::setw(10) << _numInstancedTriangles << std::endl;
-    out << std::setw(12) << "Quads      " << std::setw(10) << _numQuads << std::setw(10) << _numInstancedQuads << std::endl;
-    out << std::setw(12) << "Faces      " << std::setw(10) << _numFaces << std::setw(10) << _numInstancedFaces << std::endl;
+    out << std::setw(12) << "Triangles  " << std::setw(10) << _numTriangles << std::setw(10) << _numInstancedTriangles  << std::endl;
+    out << std::setw(12) << "Quads      " << std::setw(10) << _numQuads     << std::setw(10) << _numInstancedQuads      << std::endl;
+    out << std::setw(12) << "Faces      " << std::setw(10) << _numFaces     << std::setw(10) << _numInstancedFaces      << std::endl;
+}
+
+void StatsVisitor::printJSON(std::ostream &out)
+{
+    unsigned int unique_primitives = 0;
+    osgUtil::Statistics::PrimitiveCountMap::iterator pcmitr;
+    for(pcmitr = _uniqueStats.GetPrimitivesBegin();
+        pcmitr != _uniqueStats.GetPrimitivesEnd();
+        ++pcmitr)
+    {
+        unique_primitives += pcmitr->second;
+    }
+
+    unsigned int instanced_primitives = 0;
+    for(pcmitr = _instancedStats.GetPrimitivesBegin();
+        pcmitr != _instancedStats.GetPrimitivesEnd();
+        ++pcmitr)
+    {
+        instanced_primitives += pcmitr->second;
+    }
+
+    out << "{" << std::endl;
+    out << "  \"StateSet\": {\"unique\": "      << _statesetSet.size()          << ", \"instanced\": " << _numInstancedStateSet         << "}," << std::endl;
+    out << "  \"Group\": {\"unique\": "         << _groupSet.size()             << ", \"instanced\": " << _numInstancedGroup            << "}," << std::endl;
+    out << "  \"Transform\": {\"unique\": "     << _transformSet.size()         << ", \"instanced\": " << _numInstancedTransform        << "}," << std::endl;
+    out << "  \"LOD\": {\"unique\": "           << _lodSet.size()               << ", \"instanced\": " << _numInstancedLOD              << "}," << std::endl;
+    out << "  \"Switch\": {\"unique\": "        << _switchSet.size()            << ", \"instanced\": " << _numInstancedSwitch           << "}," << std::endl;
+    out << "  \"Geode\": {\"unique\": "         << _geodeSet.size()             << ", \"instanced\": " << _numInstancedGeode            << "}," << std::endl;
+    out << "  \"Drawable\": {\"unique\": "      << _geometrySet.size()          << ", \"instanced\": " << _numInstancedDrawable         << "}," << std::endl;
+    out << "  \"FastGeom\": {\"unique\": "      << _fastGeometrySet.size()      << ", \"instanced\": " << _numInstancedGeometry         << "}," << std::endl;
+    out << "  \"Vertices\": {\"unique\": "      << _uniqueStats._vertexCount    << ", \"instanced\": " << _instancedStats._vertexCount  << "}," << std::endl;
+    out << "  \"Primitives\": {\"unique\": "    << unique_primitives            << ", \"instanced\": " << instanced_primitives          << "}," << std::endl;
+    out << "  \"Triangles\": {\"unique\": "     << _numTriangles                << ", \"instanced\": " << _numInstancedTriangles        << "}," << std::endl;
+    out << "  \"Quads\": {\"unique\": "         << _numQuads                    << ", \"instanced\": " << _numInstancedQuads            << "}," << std::endl;
+    out << "  \"Faces\": {\"unique\": "         << _numFaces                    << ", \"instanced\": " << _numInstancedFaces            << "}" << std::endl;
+    out << "}" << std::endl;
 }

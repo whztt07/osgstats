@@ -13,6 +13,7 @@ public:
 
     virtual void reset();
     virtual void print(std::ostream &out);
+    virtual void printJSON(std::ostream &out);
 
 protected:
     unsigned _numTriangles, _numInstancedTriangles;
