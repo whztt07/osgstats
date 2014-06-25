@@ -1,7 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(osgstats)
 FIND_PACKAGE(OpenSceneGraph REQUIRED osgDB osgUtil)
-ADD_EXECUTABLE(osgstats osgstats.cpp)
+ADD_EXECUTABLE(osgstats
+    osgstats.cpp
+    StatsVisitor.cpp StatsVisitor.h
+)
 INCLUDE_DIRECTORIES(${OPENSCENEGRAPH_INCLUDE_DIRS})
 TARGET_LINK_LIBRARIES(osgstats ${OPENSCENEGRAPH_LIBRARIES})
 

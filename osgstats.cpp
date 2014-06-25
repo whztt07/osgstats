@@ -1,6 +1,6 @@
 #include <iostream>
 #include <osgDB/ReadFile>
-#include <osgUtil/Statistics>
+#include "StatsVisitor.h"
 
 int main(int argc, char* argv[])
 {
@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 
     osg::ref_ptr<osg::Node> node = osgDB::readNodeFile(argv[1]);
 
-    osgUtil::StatsVisitor stats;
+    StatsVisitor stats;
     node->accept(stats);
     stats.totalUpStats();
     stats.print(std::cout);
