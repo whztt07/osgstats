@@ -19,9 +19,30 @@ void StatsVisitor::reset()
     _numTriangles = _numInstancedTriangles = 0;
     _numQuads = _numInstancedQuads = 0;
     _numFaces = _numInstancedFaces = 0;
+    _numTextures = _numInstancedTextures = 0;
     _primitiveSetsSet.clear();
+    _texturesSet.clear();
 
     osgUtil::StatsVisitor::reset();
+}
+
+void StatsVisitor::apply(osg::StateSet &ss)
+{
+    const osg::StateSet::TextureAttributeList& textureAttributes = ss.getTextureAttributeList();
+    for(osg::StateSet::TextureAttributeList::const_iterator it_t = textureAttributes.begin(); it_t != textureAttributes.end(); it_t++) {
+        const osg::StateSet::AttributeList &attributes = *it_t;
+
+        for(osg::StateSet::AttributeList::const_iterator it_a = attributes.begin(); it_a != attributes.end(); it_a++) {
+            osg::ref_ptr<osg::StateAttribute> attribute = it_a->second.first;
+            osg::Texture *texture = attribute->asTexture();
+
+            if (_texturesSet.count(texture) == 0) {
+                _texturesSet.insert(texture);
+                _numTextures++;
+            }
+            _numInstancedTextures++;
+        }
+    }
 }
 
 void StatsVisitor::apply(osg::Drawable &drawable)
@@ -83,6 +104,7 @@ void StatsVisitor::print(std::ostream &out)
     out << std::setw(12) << "Triangles  " << std::setw(10) << _numTriangles << std::setw(10) << _numInstancedTriangles  << std::endl;
     out << std::setw(12) << "Quads      " << std::setw(10) << _numQuads     << std::setw(10) << _numInstancedQuads      << std::endl;
     out << std::setw(12) << "Faces      " << std::setw(10) << _numFaces     << std::setw(10) << _numInstancedFaces      << std::endl;
+    out << std::setw(12) << "Textures   " << std::setw(10) << _numTextures  << std::setw(10) << _numInstancedTextures   << std::endl;
 }
 
 void StatsVisitor::printJSON(std::ostream &out)
@@ -117,6 +139,7 @@ void StatsVisitor::printJSON(std::ostream &out)
     out << "  \"Primitives\": {\"unique\": "    << unique_primitives            << ", \"instanced\": " << instanced_primitives          << "}," << std::endl;
     out << "  \"Triangles\": {\"unique\": "     << _numTriangles                << ", \"instanced\": " << _numInstancedTriangles        << "}," << std::endl;
     out << "  \"Quads\": {\"unique\": "         << _numQuads                    << ", \"instanced\": " << _numInstancedQuads            << "}," << std::endl;
-    out << "  \"Faces\": {\"unique\": "         << _numFaces                    << ", \"instanced\": " << _numInstancedFaces            << "}" << std::endl;
+    out << "  \"Faces\": {\"unique\": "         << _numFaces                    << ", \"instanced\": " << _numInstancedFaces            << "}," << std::endl;
+    out << "  \"Textures\": {\"unique\": "      << _numTextures                 << ", \"instanced\": " << _numInstancedTextures         << "}" << std::endl;
     out << "}" << std::endl;
 }
